@@ -1,0 +1,37 @@
+---
+title: "Untitled"
+format: html
+---
+
+---
+title: "Lecture 2 — Intermediate BigQuery for GA4"
+subtitle: "Applying Advanced SQL Techniques to Google Analytics Data"
+author: "Lucynda Young"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+format:
+  html:
+    self-contained: true
+    theme: cosmo
+    toc: false
+---
+
+# Query 1 — Using CTEs to Structure Logic
+
+This query uses a **Common Table Expression (CTE)** to create a temporary table called `UserInfo`.
+
+The purpose is to: - Identify each unique user - Flag whether they are a **new visitor** - Summarize total vs. new users
+
+CTEs improve readability and make complex logic easier to debug.
+
+WITH UserInfo AS ( SELECT user_pseudo_id, MAX(IF(event_name IN ('first_visit', 'first_open'), 1, 0)) AS is_new_user FROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*` WHERE \_TABLE_SUFFIX BETWEEN '20201101' AND '20201130' GROUP BY user_pseudo_id ) SELECT COUNT(\*) AS total_users, SUM(is_new_user) AS new_users FROM UserInfo;
+
+The output shows the relationship between total traffic and acquisition of new users. This helps evaluate marketing effectiveness and audience growth.
+
+# Query 2A — Using UNNEST to Access Nested GA4 Data
+
+GA4 stores values inside arrays.\
+This query extracts `page_location` from the nested `event_params`.
+
+This allows analysts to read specific dimensions without flattening the dataset.
+
+![](https://file+.vscode-resource.vscode-cdn.net/Users/lucyndaponce/Desktop/school/IBM6350/Screenshot%202026-02-25%20at%208.29.04%E2%80%AFPM.png?version%3D1772080308925)
